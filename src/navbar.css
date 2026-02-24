@@ -1,0 +1,71 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  color: black;
+  padding: 10px 20px;
+  position: sticky; /* Sticks the navbar to the top */
+  top: 0;
+  width: 100%;
+}
+
+.nav-logo {
+    max-width: 15rem;
+}
+
+.navbar-logo a {
+  color: black;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li a {
+  color: black;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  display: block;
+}
+
+.nav-links li a:hover {
+  background-color: #575757;
+}
+
+.menu-icon {
+  display: none; /* Hide hamburger icon on desktop */
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+/* Responsive styles for mobile screens */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none; /* Hide links by default on mobile */
+    flex-direction: column;
+    width: 100%;
+    position: absolute;
+    top: 50px; /* Adjust based on navbar height */
+    left: 0;
+    background-color: white;
+  }
+
+  .nav-links.active {
+    display: flex; /* Show links when menu is active */
+  }
+
+  .nav-links li {
+    text-align: center;
+  }
+
+  .menu-icon {
+    display: block; /* Show hamburger icon on mobile */
+  }
+}
