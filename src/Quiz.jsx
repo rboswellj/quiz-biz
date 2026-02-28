@@ -1,24 +1,29 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTrivia } from "./fetchQuiz";
 import QuestionCard from "./QuestionCard";
-import { saveScore } from "./scores";
 import { useAuth } from "./auth/AuthProvider";
+import { saveAttempt } from "./scores";
 
 export default function Quiz() {
   const { user, signOut } = useAuth();
 
+  const questionsPerRound = 10;
+
   // Draft settings (change without fetching)
   const [draftDifficulty, setDraftDifficulty] = useState("easy");
   const [draftCategory, setDraftCategory] = useState(9);
-  const [draftAmount, setDraftAmount] = useState(10);
 
-  // Committed settings (set only when Start is clicked)
+  // Committed settings (only set when Start is clicked)
   const [settings, setSettings] = useState(null); // { difficulty, category, amount } | null
 
   // Quiz flow state
   const [index, setIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [selected, setSelected] = useState(null);
+  const [locked, setLocked] = useState(false);
   const [score, setScore] = useState(0);
+
+  // Prevent double-saving an attempt
+  const savedAttemptRef = useRef(false);
 
   // Fetch only after Start
   const { questions, status, error } = useTrivia({
@@ -28,43 +33,91 @@ export default function Quiz() {
     enabled: !!settings,
   });
 
-  const current = questions[index];
+  const current = useMemo(() => questions[index], [questions, index]);
 
   function startQuiz() {
+    savedAttemptRef.current = false;
+
     setSettings({
       difficulty: draftDifficulty,
       category: draftCategory,
-      amount: draftAmount,
+      amount: questionsPerRound,
     });
-    // reset quiz state
+
     setIndex(0);
-    setSelectedAnswer(null);
+    setSelected(null);
+    setLocked(false);
     setScore(0);
   }
 
   function changeSettings() {
+    savedAttemptRef.current = false;
     setSettings(null);
+
     setIndex(0);
-    setSelectedAnswer(null);
+    setSelected(null);
+    setLocked(false);
     setScore(0);
   }
 
-  function handleSelectAnswer(ans) {
-    setSelectedAnswer(ans);
+  function pickAnswer(ans) {
+    if (locked) return;
+    setSelected(ans);
+    setLocked(true);
 
-    // Only score once per question
-    if (ans === current.correctAnswer) setScore((s) => s + 1);
+    if (ans === current?.correctAnswer) {
+      setScore((s) => s + 1);
+    }
   }
 
-  function nextQuestion() {
-    setSelectedAnswer(null);
+  function next() {
+    setSelected(null);
+    setLocked(false);
     setIndex((i) => i + 1);
   }
 
-  // --- UI: Setup screen ---
+  // When last question is answered, move index past the end to show results screen
+  function finish() {
+    setIndex(questions.length); // signals "finished"
+  }
+
+  const isLastQuestion = index === questions.length - 1;
+  const isFinished = settings && status === "ready" && questions.length > 0 && index >= questions.length;
+
+  // Save attempt ONCE when finished
+  useEffect(() => {
+    if (!isFinished) return;
+    if (!user?.id) return;
+    if (savedAttemptRef.current) return;
+
+    savedAttemptRef.current = true;
+
+    (async () => {
+      try {
+        await saveAttempt({
+          userId: user.id,
+          category: settings.category,
+          difficulty: settings.difficulty,
+          correct: score,
+          total: questions.length,
+        });
+      } catch (e) {
+        console.error("Failed to save attempt:", e);
+        // If you want to allow retry on failure, uncomment:
+        // savedAttemptRef.current = false;
+      }
+    })();
+  }, [isFinished, user?.id, settings, score, questions.length]);
+
+  // ----------------------------
+  // UI: Setup screen
+  // ----------------------------
   if (!settings) {
     return (
-      <div>
+      <div className="container">
+        <div className="topbar" style={{ display: "flex", justifyContent: "space-between" }}>
+        </div>
+
         <h2>Quiz Setup</h2>
 
         <label>
@@ -79,7 +132,7 @@ export default function Quiz() {
           </select>
         </label>
 
-        <br />
+        <div style={{ height: 10 }} />
 
         <label>
           Category:{" "}
@@ -88,103 +141,112 @@ export default function Quiz() {
             onChange={(e) => setDraftCategory(Number(e.target.value))}
           >
             <option value={9}>General Knowledge</option>
-            <option value={11}>Movies</option>
-            <option value={12}>Music</option>
-            <option value={14}>TV</option>
-            <option value={15}>Video Games</option>
-            <option value={17}>Science & Nature</option>
             <option value={18}>Science: Computers</option>
             <option value={23}>History</option>
             <option value={21}>Sports</option>
           </select>
         </label>
 
-        <br />
+        <div style={{ height: 16 }} />
 
-        <label>
-          Amount:{" "}
-          <input
-            type="number"
-            min={1}
-            max={50}
-            value={draftAmount}
-            onChange={(e) => setDraftAmount(Number(e.target.value))}
-          />
-        </label>
-
-        <br />
-
-        <button type="button" onClick={startQuiz}>
+        <button type="button" className="btn" onClick={startQuiz}>
           Start Quiz
         </button>
       </div>
     );
   }
 
-  // --- UI: Loading / Error ---
-  if (status === "loading") return <p>Loading…</p>;
+  // ----------------------------
+  // UI: Loading / Error
+  // ----------------------------
+  if (status === "loading") return <p>Loading trivia…</p>;
 
   if (status === "error") {
     return (
-      <div>
-        <p>Error: {error?.message}</p>
-        <button type="button" onClick={changeSettings}>
+      <div className="container">
+        <p>Failed to load: {String(error?.message || error)}</p>
+        <button type="button" className="btn" onClick={changeSettings}>
           Back to Settings
         </button>
       </div>
     );
   }
 
-  // --- UI: Finished ---
-  if (!current) {
+  // ----------------------------
+  // UI: Results screen (finished)
+  // ----------------------------
+  if (isFinished) {
     return (
-      <div>
-        <h2>Finished!</h2>
+      <div className="container">
+        <div className="topbar">
+          <div>Finished!</div>
+          <div>
+            Score: {score} / {questions.length}
+          </div>
+        </div>
+
         <p>
-          Score: {score} / {questions.length}
+          Difficulty: <b>{settings.difficulty}</b> — Category: <b>{settings.category}</b>
         </p>
 
-        <button type="button" onClick={startQuiz}>
-          Play Again (same settings)
-        </button>
-
-        <button type="button" onClick={changeSettings}>
-          Change Settings
-        </button>
+        <div className="actions">
+          <button type="button" className="btn" onClick={changeSettings}>
+            Change Settings
+          </button>
+          <button
+            type="button"
+            className="btn"
+            onClick={() => {
+              // play again with same settings
+              savedAttemptRef.current = false;
+              setIndex(0);
+              setSelected(null);
+              setLocked(false);
+              setScore(0);
+            }}
+          >
+            Play Again (same settings)
+          </button>
+        </div>
       </div>
     );
   }
 
-  // --- UI: Quiz screen ---
-  return (
-    <div>
-      <div style={{ marginBottom: 12 }}>
-        <button type="button" onClick={changeSettings}>
-          Change Settings
-        </button>
+  // Guard if questions are empty
+  if (status !== "ready" || !current) return <p>No questions found.</p>;
 
-        <p style={{ margin: "8px 0" }}>
-          Question {index + 1} / {questions.length} — Score: {score}
-        </p>
+  // ----------------------------
+  // UI: Quiz screen
+  // ----------------------------
+  return (
+    <div className="container">
+      <div className="topbar">
+        <div>
+          Question {index + 1} / {questions.length}
+        </div>
+        <div>Score: {score}</div>
       </div>
 
       <QuestionCard
         question={current.question}
         answers={current.answers}
         correctAnswer={current.correctAnswer}
-        selectedAnswer={selectedAnswer}
-        locked={selectedAnswer !== null}
-        onSelectAnswer={handleSelectAnswer}
+        selectedAnswer={selected}
+        locked={locked}
+        onSelectAnswer={pickAnswer}
       />
 
-      <button
-        type="button"
-        disabled={selectedAnswer === null}
-        onClick={nextQuestion}
-        style={{ marginTop: 12 }}
-      >
-        Next
-      </button>
+      <div className="actions">
+        {!isLastQuestion ? (
+          <button type="button" className="btn" disabled={!locked} onClick={next}>
+            Next
+          </button>
+        ) : (
+          <button type="button" className="btn" disabled={!locked} onClick={finish}>
+            Finish
+          </button>
+        )}
+      </div>
     </div>
   );
 }
