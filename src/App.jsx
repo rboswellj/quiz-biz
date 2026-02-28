@@ -1,22 +1,18 @@
-import { useState } from 'react'
-import logo from '/quiz-biz-logo.png'
+import { AuthProvider } from "./auth/AuthProvider";
+import AuthGate from "./auth/AuthGate";
+import Navbar from "./navbar";
+
 import './App.css'
+import Quiz from './Quiz';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <h1>The Trivia Game!</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          Login
-        </button>
-        <button onClick={() => setCount((count) => count + 1)}>
-          Signup
-        </button>
-      </div>
-    </>
+    <AuthProvider>
+      <AuthGate>
+        <Navbar />
+        <Quiz />
+      </AuthGate>
+    </AuthProvider>
   )
 }
 

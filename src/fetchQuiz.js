@@ -1,16 +1,36 @@
+// Import React hooks
 import { useEffect, useState } from "react";
-import { shuffle, decodeHtml } from "./utils";
 
+// Import helper functions from your utils file
+// shuffle -> randomizes answers
+// decodeHtml -> converts HTML entities like &quot; into "
+import { shuffle, decodeHtml } from "../server/utils";
+
+// API endpoint from Open Trivia DB
 const API_URL =
   "https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple";
 
-export function useTrivia() {
+
+// Custom Hook
+export function useTrivia({ difficulty, category, amount = 10, enabled = true }) {
   const [questions, setQuestions] = useState([]);
-  const [status, setStatus] = useState("idle"); // idle | loading | ready | error
+  const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!enabled) return;          // ✅ don’t fetch yet
+    if (!difficulty || !category) return;
+
     let ignore = false;
+
+    const params = new URLSearchParams({
+      amount,
+      category,
+      difficulty,
+      type: "multiple",
+    });
+
+    const API_URL = `https://opentdb.com/api.php?${params.toString()}`;
 
     async function load() {
       setStatus("loading");
@@ -25,14 +45,13 @@ export function useTrivia() {
           throw new Error(`OpenTDB response_code ${data.response_code}`);
         }
 
-        // Normalize into a shape that your UI likes
         const normalized = data.results.map((q, idx) => {
           const correct = decodeHtml(q.correct_answer);
           const incorrect = q.incorrect_answers.map(decodeHtml);
           const answers = shuffle([correct, ...incorrect]);
 
           return {
-            id: `${idx}-${correct}`, // good enough for this use
+            id: `${idx}-${correct}`,
             category: q.category,
             difficulty: q.difficulty,
             question: decodeHtml(q.question),
@@ -57,7 +76,7 @@ export function useTrivia() {
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [difficulty, category, amount, enabled]);
 
   return { questions, status, error };
 }

@@ -8,6 +8,7 @@
   position: sticky; /* Sticks the navbar to the top */
   top: 0;
   width: 100%;
+  z-index: 10;
 }
 
 .nav-logo {
@@ -45,8 +46,52 @@
   font-size: 1.5rem;
 }
 
+.user-menu {
+  position: relative;
+}
+
+.user-menu-button {
+  background: transparent;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  padding: 0.4rem 0.7rem;
+  color: black;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.user-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  min-width: 140px;
+  background: white;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 0.3rem;
+}
+
+.logout-button {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background: #f2f2f2;
+}
+
 /* Responsive styles for mobile screens */
 @media (max-width: 768px) {
+  .navbar {
+    flex-wrap: wrap;
+  }
+
   .nav-links {
     display: none; /* Hide links by default on mobile */
     flex-direction: column;
@@ -67,5 +112,9 @@
 
   .menu-icon {
     display: block; /* Show hamburger icon on mobile */
+  }
+
+  .user-menu {
+    margin-left: auto;
   }
 }

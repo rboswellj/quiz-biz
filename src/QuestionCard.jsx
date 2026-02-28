@@ -1,41 +1,50 @@
-// QuestionCard.jsx
 export default function QuestionCard({
-  q,
-  selected,
-  isLocked,
-  onSelect,
+  question,
+  answers,
+  correctAnswer,
+  selectedAnswer,
+  onSelectAnswer,
+  locked,
 }) {
   return (
-    <div className="card">
-      <div className="meta">
-        {q.category} · {q.difficulty}
-      </div>
+    <div>
+      <h2>{question}</h2>
 
-      <h3 className="title">{q.question}</h3>
+      {answers.map((a) => {
+        const isSelected = selectedAnswer === a;
+        const isCorrect = selectedAnswer !== null && a === correctAnswer;
+        const isWrong = selectedAnswer === a && selectedAnswer !== correctAnswer;
 
-      <div className="answers">
-        {q.answers.map((ans) => {
-          const isChosen = selected === ans;
+        return (
+          <button
+            key={a}
+            type="button" // ✅ prevents form submit surprises
+            onClick={() => onSelectAnswer(a)}
+            disabled={locked}
+            style={{
+              borderWidth: 2,
+              borderStyle: "solid",
+              borderColor: isCorrect
+                ? "green"
+                : isWrong
+                ? "red"
+                : isSelected
+                ? "black"
+                : "#ccc",
+              marginBottom: 8,
+              display: "block",
+              width: "100%",
+              padding: 10,
+            }}
+          >
+            {a}
+          </button>
+        );
+      })}
 
-          // Optional coloring when locked
-          const className =
-            "btn-answer" +
-            (isLocked && ans === q.correctAnswer ? " correct" : "") +
-            (isLocked && isChosen && ans !== q.correctAnswer ? " wrong" : "") +
-            (isChosen ? " chosen" : "");
-
-          return (
-            <button
-              key={ans}
-              className={className}
-              disabled={isLocked}
-              onClick={() => onSelect(ans)}
-            >
-              {ans}
-            </button>
-          );
-        })}
-      </div>
+      {selectedAnswer !== null && (
+        <p>{selectedAnswer === correctAnswer ? "✅ Correct!" : "❌ Incorrect"}</p>
+      )}
     </div>
   );
 }

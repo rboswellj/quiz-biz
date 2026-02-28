@@ -1,3 +1,11 @@
+TODO:
+Logo moves based on quiz answer width
+implement user accounts
+scoreboards
+database for users and scores
+
+Possible
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
