@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./auth/SupabaseClient";
-import { CATEGORY_NAMES } from "./utility/utils";
+import { CATEGORY_NAMES } from "./utility/Utils";
 
 function fmtPercent(x) {
   if (x == null || Number.isNaN(x)) return "—";

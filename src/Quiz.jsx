@@ -3,7 +3,7 @@ import { useTrivia } from "./utility/fetchQuiz";
 import QuestionCard from "./QuestionCard";
 import { useAuth } from "./auth/AuthProvider";
 import { saveAttempt } from "./utility/Scores";
-import { CATEGORY_NAMES } from "./utility/utils";
+import { CATEGORY_NAMES } from "./utility/Utils";
 
 export default function Quiz() {
   const { user } = useAuth();
