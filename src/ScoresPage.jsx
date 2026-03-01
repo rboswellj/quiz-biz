@@ -1,18 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "./auth/SupabaseClient";
 import { useAuth } from "./auth/AuthProvider";
+import { CATEGORY_NAMES } from "./utility/utils";
 
 // Optional: map OpenTDB category ids to names (add as you like)
-const CATEGORY_NAMES = {
-  9: "General Knowledge",
-  10: "Entertainment: Books",
-  11: "Entertainment: Film",
-  12: "Entertainment: Music",
-  17: "Science: Nature",
-  18: "Science: Computers",
-  23: "History",
-  21: "Sports",
-};
 
 function fmtPercent(x) {
   if (x == null || Number.isNaN(x)) return "—";

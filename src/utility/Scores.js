@@ -1,4 +1,4 @@
-import { supabase } from "./auth/SupabaseClient";
+import { supabase } from "../auth/SupabaseClient";
 
 export async function saveAttempt({ userId, category, difficulty, correct, total }) {
   const { error } = await supabase.from("quiz_attempts").insert({

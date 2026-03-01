@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useTrivia } from "./fetchQuiz";
+import { useTrivia } from "./utility/fetchQuiz";
 import QuestionCard from "./QuestionCard";
 import { useAuth } from "./auth/AuthProvider";
-import { saveAttempt } from "./scores";
+import { saveAttempt } from "./utility/Scores";
+import { CATEGORY_NAMES } from "./utility/utils";
 
 export default function Quiz() {
   const { user, signOut } = useAuth();
@@ -84,6 +85,11 @@ export default function Quiz() {
     setIndex(questions.length); // signals "finished"
   }
 
+  // Pull category list from utils
+  const categoryOptions = Object.entries(CATEGORY_NAMES)
+  .map(([id, name]) => ({ id: Number(id), name }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+
   const isLastQuestion = index === questions.length - 1;
   const isFinished = settings && status === "ready" && questions.length > 0 && index >= questions.length;
 
@@ -143,14 +149,11 @@ export default function Quiz() {
             value={draftCategory}
             onChange={(e) => setDraftCategory(Number(e.target.value))}
           >
-            <option value={9}>General Knowledge</option>
-            <option value={10}>Entertainment: Books</option>
-            <option value={11}>Entertainment: Film</option>
-            <option value={12}>Entertainment: Music</option>
-            <option value={17}>Science: Nature</option>
-            <option value={18}>Science: Computers</option>
-            <option value={23}>History</option>
-            <option value={21}>Sports</option>
+            {categoryOptions.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
           </select>
         </label>
 
