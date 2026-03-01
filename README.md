@@ -1,24 +1,148 @@
-TODO:
-Logo moves based on quiz answer width
-implement user accounts
-scoreboards
-database for users and scores
+Robert Johnson
+rboswellj
 
-Possible
 
-# React + Vite
+🎯 QuizBiz
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+QuizBiz is a full-stack trivia application built with React and Supabase.
+Users can sign up, take quizzes by category and difficulty, track their performance over time, and compete on weighted leaderboards.
 
-Currently, two official plugins are available:
+🚀 Features
+🔐 Authentication
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Email/password authentication via Supabase
 
-## React Compiler
+Nickname stored in a profiles table
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Session persistence
 
-## Expanding the ESLint configuration
+Auth-aware UI (Navbar remains visible; content swaps dynamically)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+🧠 Quiz Engine
+
+Questions powered by the OpenTDB API
+
+Selectable:
+
+Category
+
+Difficulty
+
+10 questions per round
+
+“Play Again” with fresh API fetch
+
+Immediate answer feedback
+
+📊 Scoring System
+
+Each completed quiz saves:
+
+Category
+
+Difficulty
+
+Correct answers
+
+Total questions
+
+Stored in quiz_attempts table
+
+📈 Weighted Leaderboards
+
+Score = sum(correct) / sum(total)
+
+Calculated per:
+
+Category
+
+Difficulty
+
+Requires minimum 50 total answered questions to rank
+
+Sorted by:
+
+Weighted %
+
+Questions answered
+
+Last played
+
+👤 User Dashboard
+
+Overall weighted percentage
+
+Breakdown by category & difficulty
+
+Recent quiz attempts
+
+🛠 Tech Stack
+
+Frontend
+
+React
+
+Vite
+
+Custom hooks
+
+CSS modules
+
+Backend
+
+Supabase (PostgreSQL + Auth + RPC functions)
+
+API
+
+OpenTDB (Open Trivia Database)
+
+🗂 Database Structure
+profiles
+Column	    Type	Description
+id	        uuid	references auth.users
+nickname	text	public display name
+
+quiz_attempts
+
+Column	    Type	Description
+id	        bigint	primary key
+user_id	    uuid	references auth.users
+category	int	    OpenTDB category id
+difficulty	text	easy/medium/hard
+correct	    int	number correct
+total   	int	number of questions
+created_at	timestamptz	default now()
+Leaderboard Logic
+
+Weighted percentage is calculated as:
+
+sum(correct)::float / nullif(sum(total), 0)
+
+Only users with:
+
+sum(total) >= 50
+
+are eligible for ranking.
+
+
+Leaderboard data is exposed via a Supabase SECURITY DEFINER RPC function:
+
+get_leaderboard_weighted(category, difficulty, limit)
+
+This prevents exposing raw quiz attempts while still allowing ranked results.
+
+Local Development
+1. Clone the repo
+git clone https://github.com/rboswellj/quiz-biz
+cd quizbiz
+2. Install dependencies
+npm install
+3. Add environment variables
+
+Create a .env file:
+
+VITE_SUPABASE_URL=your-project-url
+VITE_SUPABASE_ANON_KEY=your-anon-key
+4. Run the app
+npm run dev
+
