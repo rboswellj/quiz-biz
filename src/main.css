@@ -273,6 +273,12 @@ button:focus-visible {
   padding: .25rem 1rem;
 }
 
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .data-table tr{
   border-bottom: 1px solid #e0e0e0;
   padding: 1rem;
@@ -282,4 +288,51 @@ button:focus-visible {
   text-align: center;
   padding: 0.75rem;
   background-color: #f5f5f5;
+}
+
+.auth-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 100%;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.auth-form input {
+  padding: 0.5rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+}
+
+@media (max-width: 480px) {
+  .page-wrap {
+    width: 100%;
+    padding: 0 0.5rem;
+  }
+
+  .table-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .data-table {
+    min-width: 640px;
+    margin-top: 0.75rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    white-space: nowrap;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
 }

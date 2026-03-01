@@ -129,6 +129,7 @@ export default function Quiz() {
   if (!settings) {
     return (
       <div className="container">
+        <div className="quiz-card">
         <h2>Quiz Setup</h2>
 
         <label>
@@ -164,6 +165,7 @@ export default function Quiz() {
         <button type="button" className="btn" onClick={startQuiz}>
           Start Quiz
         </button>
+        </div>
       </div>
     );
   }

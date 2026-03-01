@@ -10,8 +10,8 @@ function fmtPercent(x) {
   return `${Math.round(x * 1000) / 10}%`; // one decimal
 }
 
-export default function ScoresPage({ onBack }) {
-  const { user, signOut } = useAuth();
+export default function ScoresPage() {
+  const { user } = useAuth();
 
   const [nickname, setNickname] = useState(null);
   const [stats, setStats] = useState([]);
@@ -109,7 +109,6 @@ export default function ScoresPage({ onBack }) {
             Overall: {fmtPercent(overall.pct)} ({overall.totalC}/{overall.totalQ})
           </div>
         </div>
-
       </div>
 
       <hr className="section-divider" />

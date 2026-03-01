@@ -7,7 +7,7 @@ function fmtPercent(x) {
   return `${Math.round(x * 1000) / 10}%`;
 }
 
-export default function LeaderboardsPage({ onBack }) {
+export default function LeaderboardsPage() {
   // Filter state for leaderboard bucket.
   const [category, setCategory] = useState(9);
   const [difficulty, setDifficulty] = useState("easy");
