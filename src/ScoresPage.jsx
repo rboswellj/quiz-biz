@@ -28,7 +28,7 @@ export default function ScoresPage({ onBack }) {
       setErr("");
 
       try {
-        // 1) profile nickname
+        // 1) Load profile nickname for header display.
         const prof = await supabase
           .from("profiles")
           .select("nickname")
@@ -37,16 +37,17 @@ export default function ScoresPage({ onBack }) {
 
         if (prof.error) throw prof.error;
 
-        // 2) weighted stats per category+difficulty
+        // 2) Load precomputed weighted stats view.
         const st = await supabase
-          .from("my_weighted_stats")
-          .select("category,difficulty,weighted_percent,questions_answered,attempts,last_played")
-          .order("category", { ascending: true })
-          .order("difficulty", { ascending: true });
+        .from("my_weighted_stats")
+        .select("category,difficulty,weighted_percent,questions_answered,attempts,last_played")
+        .eq("user_id", user.id) // ✅ add this
+        .order("category", { ascending: true })
+        .order("difficulty", { ascending: true });
 
         if (st.error) throw st.error;
 
-        // 3) recent attempts list
+        // 3) Load most recent attempts for history table.
         const at = await supabase
           .from("quiz_attempts")
           .select("id,category,difficulty,correct,total,created_at")
@@ -69,6 +70,7 @@ export default function ScoresPage({ onBack }) {
 
     load();
     return () => {
+      // Avoid state updates when async work finishes after unmount.
       cancelled = true;
     };
   }, [user?.id]);
@@ -88,93 +90,57 @@ export default function ScoresPage({ onBack }) {
 
   if (err) {
     return (
-      <div style={{ maxWidth: 900, margin: "0 auto" }}>
+      <div className="page-wrap">
         <h2>My Scores</h2>
-        <p style={{ color: "crimson" }}>{err}</p>
-        <div style={{ display: "flex", gap: 8 }}>
-          {onBack && (
-            <button type="button" onClick={onBack}>
-              Back
-            </button>
-          )}
-          <button type="button" onClick={signOut}>
-            Sign out
-          </button>
-        </div>
+        <p className="text-error">{err}</p>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+    <div className="page-wrap">
+      <div className="page-header">
         <div>
-          <h2 style={{ marginBottom: 4 }}>My Scores</h2>
-          <div style={{ opacity: 0.8 }}>
+          <h2 className="title-tight">My Scores</h2>
+          <div className="text-muted">
             {nickname ? `Nickname: ${nickname}` : "Nickname: —"}
           </div>
-          <div style={{ opacity: 0.8 }}>
+          <div className="text-muted">
             Overall: {fmtPercent(overall.pct)} ({overall.totalC}/{overall.totalQ})
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 8, alignItems: "start" }}>
-          {onBack && (
-            <button type="button" onClick={onBack}>
-              Back to Quiz
-            </button>
-          )}
-          <button type="button" onClick={signOut}>
-            Sign out
-          </button>
-        </div>
       </div>
 
-      <hr style={{ margin: "16px 0" }} />
+      <hr className="section-divider" />
 
       <h3>Weighted stats by category & difficulty</h3>
       {stats.length === 0 ? (
         <p>No attempts yet. Finish a quiz and come back!</p>
       ) : (
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <div className="table-wrap">
+          <table className="data-table">
             <thead>
               <tr>
-                <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>
-                  Category
-                </th>
-                <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>
-                  Difficulty
-                </th>
-                <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>
-                  Weighted %
-                </th>
-                <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>
-                  Questions
-                </th>
-                <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>
-                  Attempts
-                </th>
+                <th>Category</th>
+                <th>Difficulty</th>
+                <th>Weighted %</th>
+                <th>Questions</th>
+                <th>Attempts</th>
               </tr>
             </thead>
             <tbody>
               {stats.map((s) => (
                 <tr key={`${s.category}-${s.difficulty}`}>
-                  <td style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
+                  <td>
                     {CATEGORY_NAMES[s.category] ?? `Category ${s.category}`}
                   </td>
-                  <td style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
-                    {s.difficulty}
-                  </td>
-                  <td style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
+                  <td>{s.difficulty}</td>
+                  <td>
                     {fmtPercent(s.weighted_percent)}
                   </td>
-                  <td style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
-                    {s.questions_answered}
-                  </td>
-                  <td style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
-                    {s.attempts}
-                  </td>
+                  <td>{s.questions_answered}</td>
+                  <td>{s.attempts}</td>
                 </tr>
               ))}
             </tbody>
@@ -182,31 +148,21 @@ export default function ScoresPage({ onBack }) {
         </div>
       )}
 
-      <hr style={{ margin: "16px 0" }} />
+      <hr className="section-divider" />
 
       <h3>Recent quiz attempts</h3>
       {attempts.length === 0 ? (
         <p>No attempts yet.</p>
       ) : (
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <div className="table-wrap">
+          <table className="data-table">
             <thead>
               <tr>
-                <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>
-                  When
-                </th>
-                <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>
-                  Category
-                </th>
-                <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>
-                  Difficulty
-                </th>
-                <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>
-                  Score
-                </th>
-                <th style={{ textAlign: "left", borderBottom: "1px solid #ddd", padding: 8 }}>
-                  %
-                </th>
+                <th>When</th>
+                <th>Category</th>
+                <th>Difficulty</th>
+                <th>Score</th>
+                <th>%</th>
               </tr>
             </thead>
             <tbody>
@@ -214,21 +170,15 @@ export default function ScoresPage({ onBack }) {
                 const pct = a.total ? a.correct / a.total : null;
                 return (
                   <tr key={a.id}>
-                    <td style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
+                    <td>
                       {new Date(a.created_at).toLocaleString()}
                     </td>
-                    <td style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
+                    <td>
                       {CATEGORY_NAMES[a.category] ?? `Category ${a.category}`}
                     </td>
-                    <td style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
-                      {a.difficulty}
-                    </td>
-                    <td style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
-                      {a.correct}/{a.total}
-                    </td>
-                    <td style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
-                      {fmtPercent(pct)}
-                    </td>
+                    <td>{a.difficulty}</td>
+                    <td>{a.correct}/{a.total}</td>
+                    <td>{fmtPercent(pct)}</td>
                   </tr>
                 );
               })}

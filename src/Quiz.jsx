@@ -6,8 +6,9 @@ import { saveAttempt } from "./utility/Scores";
 import { CATEGORY_NAMES } from "./utility/utils";
 
 export default function Quiz() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
 
+  // Fixed round length used for each quiz start.
   const questionsPerRound = 10;
 
   // Draft settings (change without fetching)
@@ -27,7 +28,7 @@ export default function Quiz() {
   // Prevent double-saving an attempt
   const savedAttemptRef = useRef(false);
 
-  // Fetch only after Start
+  // Fetch only after Start; requestKey forces a refetch for "play again".
   const { questions, status, error } = useTrivia({
     difficulty: settings?.difficulty,
     category: settings?.category,
@@ -36,9 +37,11 @@ export default function Quiz() {
     requestKey // allows manual refresh
   });
 
+  // Current question derived from list + cursor.
   const current = useMemo(() => questions[index], [questions, index]);
 
   function startQuiz() {
+    // New run: clear "saved attempt" guard and trigger fresh fetch.
     savedAttemptRef.current = false;
     setRequestKey((k) => k + 1);
 
@@ -55,6 +58,7 @@ export default function Quiz() {
   }
 
   function changeSettings() {
+    // Return to setup and clear all in-progress quiz state.
     savedAttemptRef.current = false;
     setSettings(null);
 
@@ -66,6 +70,7 @@ export default function Quiz() {
 
   function pickAnswer(ans) {
     if (locked) return;
+    // Lock immediately so one question cannot be answered twice.
     setSelected(ans);
     setLocked(true);
 
@@ -93,7 +98,7 @@ export default function Quiz() {
   const isLastQuestion = index === questions.length - 1;
   const isFinished = settings && status === "ready" && questions.length > 0 && index >= questions.length;
 
-  // Save attempt ONCE when finished
+  // Save attempt once when finish screen is reached.
   useEffect(() => {
     if (!isFinished) return;
     if (!user?.id) return;
@@ -112,7 +117,7 @@ export default function Quiz() {
         });
       } catch (e) {
         console.error("Failed to save attempt:", e);
-        // If you want to allow retry on failure, uncomment:
+        // Optional retry behavior:
         // savedAttemptRef.current = false;
       }
     })();
@@ -124,9 +129,6 @@ export default function Quiz() {
   if (!settings) {
     return (
       <div className="container">
-        <div className="topbar" style={{ display: "flex", justifyContent: "space-between" }}>
-        </div>
-
         <h2>Quiz Setup</h2>
 
         <label>
@@ -141,7 +143,7 @@ export default function Quiz() {
           </select>
         </label>
 
-        <div style={{ height: 10 }} />
+        <div className="spacer-sm" />
 
         <label>
           Category:{" "}
@@ -157,7 +159,7 @@ export default function Quiz() {
           </select>
         </label>
 
-        <div style={{ height: 16 }} />
+        <div className="spacer-md" />
 
         <button type="button" className="btn" onClick={startQuiz}>
           Start Quiz

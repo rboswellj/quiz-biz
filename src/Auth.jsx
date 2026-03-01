@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useAuth } from "./auth/AuthProvider";
-import { supabase } from "./auth/SupabaseClient"; // <-- adjust path if needed
+import { supabase } from "./auth/SupabaseClient";
 
 export default function Auth() {
   const { signIn, signUp } = useAuth();
 
   const [mode, setMode] = useState("signin"); // signin | signup
-  const [nickname, setNickname] = useState(""); // ✅ moved INSIDE component
+  const [nickname, setNickname] = useState(""); // Only used for signup
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState("");
@@ -36,7 +36,7 @@ export default function Auth() {
       }
 
       if (mode === "signup") {
-        // signUp should return { data, error }
+        // Create auth user in Supabase Auth.
         const { data, error } = await signUp(cleanEmail, password);
         if (error) {
           setMsg(error.message);
@@ -49,7 +49,7 @@ export default function Auth() {
           return;
         }
 
-        // Insert nickname into profiles table
+        // Store nickname in app profile table for leaderboard/display use.
         const { error: profileErr } = await supabase
           .from("profiles")
           .insert({ id: userId, nickname: cleanNickname });
@@ -68,7 +68,7 @@ export default function Auth() {
         return;
       }
 
-      // ✅ Sign in
+      // Existing user sign-in path.
       const { error } = await signIn(cleanEmail, password);
       if (error) setMsg(error.message);
       else setMsg("Signed in!");
@@ -80,55 +80,57 @@ export default function Auth() {
   }
 
   return (
-    <div style={{ maxWidth: 360 }}>
+    <div className="container">
+      <div className="auth-panel">
       <h2>{mode === "signup" ? "Create account" : "Sign in"}</h2>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="auth-form">
         {/* Nickname field only for signup */}
         {mode === "signup" && (
           <input
+            className="auth-input"
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             placeholder="Nickname (3–20 chars, letters/numbers/_)"
             autoComplete="nickname"
-            style={{ width: "100%", padding: 10, marginBottom: 8 }}
           />
         )}
 
         <input
+          className="auth-input"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
           autoComplete="email"
-          style={{ width: "100%", padding: 10, marginBottom: 8 }}
         />
 
         <input
+          className="auth-input"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
           type="password"
           autoComplete={mode === "signup" ? "new-password" : "current-password"}
-          style={{ width: "100%", padding: 10, marginBottom: 8 }}
         />
 
-        <button type="submit" disabled={busy} style={{ width: "100%", padding: 10 }}>
+        <button type="submit" disabled={busy} className="auth-submit">
           {busy ? "Please wait…" : mode === "signup" ? "Sign up" : "Sign in"}
         </button>
       </form>
 
       <button
         type="button"
+        className="auth-switch"
         onClick={() => {
           setMode(mode === "signup" ? "signin" : "signup");
           setMsg("");
         }}
-        style={{ marginTop: 10 }}
       >
         Switch to {mode === "signup" ? "Sign in" : "Sign up"}
       </button>
 
-      {msg && <p style={{ marginTop: 10 }}>{msg}</p>}
+      {msg && <p className="auth-message">{msg}</p>}
+      </div>
     </div>
   );
 }
