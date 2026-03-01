@@ -21,6 +21,7 @@ export default function Quiz() {
   const [selected, setSelected] = useState(null);
   const [locked, setLocked] = useState(false);
   const [score, setScore] = useState(0);
+  const [requestKey, setRequestKey] = useState(0);
 
   // Prevent double-saving an attempt
   const savedAttemptRef = useRef(false);
@@ -31,12 +32,14 @@ export default function Quiz() {
     category: settings?.category,
     amount: settings?.amount,
     enabled: !!settings,
+    requestKey // allows manual refresh
   });
 
   const current = useMemo(() => questions[index], [questions, index]);
 
   function startQuiz() {
     savedAttemptRef.current = false;
+    setRequestKey((k) => k + 1);
 
     setSettings({
       difficulty: draftDifficulty,
@@ -141,6 +144,10 @@ export default function Quiz() {
             onChange={(e) => setDraftCategory(Number(e.target.value))}
           >
             <option value={9}>General Knowledge</option>
+            <option value={10}>Entertainment: Books</option>
+            <option value={11}>Entertainment: Film</option>
+            <option value={12}>Entertainment: Music</option>
+            <option value={17}>Science: Nature</option>
             <option value={18}>Science: Computers</option>
             <option value={23}>History</option>
             <option value={21}>Sports</option>
@@ -199,6 +206,7 @@ export default function Quiz() {
             onClick={() => {
               // play again with same settings
               savedAttemptRef.current = false;
+              setRequestKey((k) => k + 1);
               setIndex(0);
               setSelected(null);
               setLocked(false);
