@@ -336,3 +336,26 @@ button:focus-visible {
     font-size: 0.9rem;
   }
 }
+
+select {
+  /* Remove default browser appearance */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  /* Basic styling */
+  width: 100%;
+  padding: 0.675em 1em;
+  background-color: #fff;
+  border: 1px solid #caced1;
+  border-radius: 0.25rem;
+  color: #000;
+  cursor: pointer;
+  font-size: 1.15rem;
+
+  /* Add custom arrow icon using background image (or use a separate icon container) */
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%204%205%22%3E%3Cpath%20fill%3D%22%23444%22%20d%3D%22M2%200L0%202h4zm0%205L0%203h4z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 1em top 50%;
+  background-size: 0.65em auto;
+}

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "./auth/SupabaseClient";
 import { useAuth } from "./auth/AuthProvider";
-import { CATEGORY_NAMES } from "./utility/utils";
+import { CATEGORY_NAMES } from "./utility/Utils";
 
 // Optional: map OpenTDB category ids to names (add as you like)
 
