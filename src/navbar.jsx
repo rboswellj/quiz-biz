@@ -3,8 +3,11 @@ import { useAuth } from "./auth/AuthProvider";
 import { supabase } from "./auth/SupabaseClient";
 
 const Navbar = ({ page, onNavigate }) => {
+  // Mobile nav menu state.
   const [isOpen, setIsOpen] = useState(false);
+  // User dropdown state.
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  // Profile nickname fetched from the `profiles` table.
   const [nickname, setNickname] = useState(null);
   const { user, signOut } = useAuth();
 
@@ -17,6 +20,7 @@ const Navbar = ({ page, onNavigate }) => {
         return;
       }
 
+      // Nickname is stored in `profiles`, keyed by auth user id.
       const prof = await supabase
         .from("profiles")
         .select("nickname")
@@ -49,9 +53,10 @@ const Navbar = ({ page, onNavigate }) => {
 
   const navigate = (target) => {
     onNavigate(target);
-    setIsOpen(false); // close mobile menu after click
+    setIsOpen(false); // Close mobile menu after selecting a page.
   };
 
+  // Prefer nickname for display; fallback to email prefix.
   const displayName = nickname || user?.email?.split("@")[0] || "Account";
 
   return (
@@ -62,7 +67,6 @@ const Navbar = ({ page, onNavigate }) => {
           alt="Quiz-Biz Logo"
           className="nav-logo"
           onClick={() => navigate("quiz")}
-          style={{ cursor: "pointer" }}
         />
       </div>
 
@@ -98,6 +102,15 @@ const Navbar = ({ page, onNavigate }) => {
             onClick={() => navigate("leaderboard")}
           >
             Leaderboards
+          </button>
+        </li>
+
+        <li className="mobile-user-row">
+          <span className="mobile-username">{displayName}</span>
+        </li>
+        <li className="mobile-signout-row">
+          <button type="button" className="mobile-signout-button" onClick={handleSignOut}>
+            Log out
           </button>
         </li>
       </ul>

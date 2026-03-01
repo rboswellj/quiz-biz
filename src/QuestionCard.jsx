@@ -7,10 +7,11 @@ export default function QuestionCard({
   locked,
 }) {
   return (
-    <div>
+    <div className="quiz-card">
       <h2>{question}</h2>
 
       {answers.map((a) => {
+        // Derive per-answer visual state from current selection.
         const isSelected = selectedAnswer === a;
         const isCorrect = selectedAnswer !== null && a === correctAnswer;
         const isWrong = selectedAnswer === a && selectedAnswer !== correctAnswer;
@@ -21,21 +22,15 @@ export default function QuestionCard({
             type="button" // ✅ prevents form submit surprises
             onClick={() => onSelectAnswer(a)}
             disabled={locked}
-            style={{
-              borderWidth: 2,
-              borderStyle: "solid",
-              borderColor: isCorrect
-                ? "green"
+            className={`quiz-answer ${
+              isCorrect
+                ? "quiz-answer-correct"
                 : isWrong
-                ? "red"
+                ? "quiz-answer-wrong"
                 : isSelected
-                ? "black"
-                : "#ccc",
-              marginBottom: 8,
-              display: "block",
-              width: "100%",
-              padding: 10,
-            }}
+                ? "quiz-answer-selected"
+                : ""
+            }`}
           >
             {a}
           </button>

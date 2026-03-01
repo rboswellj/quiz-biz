@@ -8,6 +8,7 @@ function fmtPercent(x) {
 }
 
 export default function LeaderboardsPage({ onBack }) {
+  // Filter state for leaderboard bucket.
   const [category, setCategory] = useState(9);
   const [difficulty, setDifficulty] = useState("easy");
   const [rows, setRows] = useState([]);
@@ -21,6 +22,7 @@ export default function LeaderboardsPage({ onBack }) {
       setLoading(true);
       setErr("");
 
+      // RPC returns leaderboard rows ranked by weighted performance.
       const { data, error } = await supabase.rpc("get_leaderboard_weighted", {
         p_category: category,
         p_difficulty: difficulty,
@@ -41,14 +43,14 @@ export default function LeaderboardsPage({ onBack }) {
 
     load();
     return () => {
+      // Guard against state changes after unmount/filter switch.
       cancelled = true;
     };
   }, [category, difficulty]);
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto" }}>
-    
-      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
+    <div className="page-wrap">
+      <div className="filters-row">
         <label>
           Category:{" "}
           <select value={category} onChange={(e) => setCategory(Number(e.target.value))}>
@@ -71,51 +73,31 @@ export default function LeaderboardsPage({ onBack }) {
       </div>
 
       {loading && <p>Loading leaderboard…</p>}
-      {err && <p style={{ color: "crimson" }}>{err}</p>}
+      {err && <p className="text-error">{err}</p>}
 
       {!loading && !err && (
         rows.length === 0 ? (
           <p>No one has enough attempts yet (needs 50+ questions in this bucket).</p>
         ) : (
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <div className="table-wrap">
+            <table className="data-table">
               <thead>
                 <tr>
-                  <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #ddd" }}>
-                    Rank
-                  </th>
-                  <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #ddd" }}>
-                    Nickname
-                  </th>
-                  <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #ddd" }}>
-                    Weighted %
-                  </th>
-                  <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #ddd" }}>
-                    Questions
-                  </th>
-                  <th style={{ textAlign: "left", padding: 8, borderBottom: "1px solid #ddd" }}>
-                    Attempts
-                  </th>
+                  <th>Rank</th>
+                  <th>Nickname</th>
+                  <th>Weighted %</th>
+                  <th>Questions</th>
+                  <th>Attempts</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((r, i) => (
                   <tr key={`${r.nickname}-${i}`}>
-                    <td style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
-                      {i + 1}
-                    </td>
-                    <td style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
-                      {r.nickname}
-                    </td>
-                    <td style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
-                      {fmtPercent(r.weighted_percent)}
-                    </td>
-                    <td style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
-                      {r.questions_answered}
-                    </td>
-                    <td style={{ padding: 8, borderBottom: "1px solid #f0f0f0" }}>
-                      {r.attempts}
-                    </td>
+                    <td>{i + 1}</td>
+                    <td>{r.nickname}</td>
+                    <td>{fmtPercent(r.weighted_percent)}</td>
+                    <td>{r.questions_answered}</td>
+                    <td>{r.attempts}</td>
                   </tr>
                 ))}
               </tbody>
