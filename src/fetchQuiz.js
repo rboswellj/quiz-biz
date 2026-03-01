@@ -12,7 +12,7 @@ const API_URL =
 
 
 // Custom Hook
-export function useTrivia({ difficulty, category, amount = 10, enabled = true }) {
+export function useTrivia({ difficulty, category, amount = 10, enabled = true, requestKey = 0 }) {
   const [questions, setQuestions] = useState([]);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
@@ -76,7 +76,7 @@ export function useTrivia({ difficulty, category, amount = 10, enabled = true })
     return () => {
       ignore = true;
     };
-  }, [difficulty, category, amount, enabled]);
+  }, [difficulty, category, amount, enabled, requestKey]);
 
   return { questions, status, error };
 }

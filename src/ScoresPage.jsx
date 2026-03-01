@@ -5,6 +5,10 @@ import { useAuth } from "./auth/AuthProvider";
 // Optional: map OpenTDB category ids to names (add as you like)
 const CATEGORY_NAMES = {
   9: "General Knowledge",
+  10: "Entertainment: Books",
+  11: "Entertainment: Film",
+  12: "Entertainment: Music",
+  17: "Science: Nature",
   18: "Science: Computers",
   23: "History",
   21: "Sports",
