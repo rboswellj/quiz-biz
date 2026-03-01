@@ -1,3 +1,70 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  color: #213547;
+  background-color: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #535bf2;
+}
+
+h1 {
+  font-size: 2.5rem;
+  line-height: 0.5rem;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+button:hover {
+  border-color: #646cff;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -5,21 +72,14 @@
   background-color: white;
   color: black;
   padding: 10px 20px;
-  position: sticky; /* Sticks the navbar to the top */
+  position: sticky;
   top: 0;
   width: 100%;
   z-index: 10;
 }
 
 .nav-logo {
-    max-width: 15rem;
-}
-
-.navbar-logo a {
-  color: black;
-  text-decoration: none;
-  font-size: 1.5rem;
-  font-weight: bold;
+  max-width: 15rem;
 }
 
 .nav-links {
@@ -29,19 +89,27 @@
   padding: 0;
 }
 
-.nav-links li a {
+.nav-links li button {
   color: black;
   text-decoration: none;
   padding: 0.5rem 1rem;
   display: block;
+  background: transparent;
+  border: none;
+  border-radius: 0;
 }
 
-.nav-links li a:hover {
-  background-color: #575757;
+.nav-links li button:hover {
+  background-color: #f2f2f2;
+  border-color: transparent;
+}
+
+.nav-links li button.active {
+  font-weight: 700;
 }
 
 .menu-icon {
-  display: none; /* Hide hamburger icon on desktop */
+  display: none;
   cursor: pointer;
   font-size: 1.5rem;
 }
@@ -84,26 +152,26 @@
 
 .logout-button:hover {
   background: #f2f2f2;
+  border-color: transparent;
 }
 
-/* Responsive styles for mobile screens */
 @media (max-width: 768px) {
   .navbar {
     flex-wrap: wrap;
   }
 
   .nav-links {
-    display: none; /* Hide links by default on mobile */
+    display: none;
     flex-direction: column;
     width: 100%;
     position: absolute;
-    top: 50px; /* Adjust based on navbar height */
+    top: 50px;
     left: 0;
     background-color: white;
   }
 
   .nav-links.active {
-    display: flex; /* Show links when menu is active */
+    display: flex;
   }
 
   .nav-links li {
@@ -111,7 +179,7 @@
   }
 
   .menu-icon {
-    display: block; /* Show hamburger icon on mobile */
+    display: block;
   }
 
   .user-menu {

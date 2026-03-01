@@ -1,10 +1,9 @@
 // Import React hooks
 import { useEffect, useState } from "react";
 
-// Import helper functions from your utils file
 // shuffle -> randomizes answers
 // decodeHtml -> converts HTML entities like &quot; into "
-import { shuffle, decodeHtml } from "../server/utils";
+import { shuffle, decodeHtml } from "./utils";
 
 // API endpoint from Open Trivia DB
 const API_URL =

@@ -1,11 +1,38 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "./auth/AuthProvider";
-import "./navbar.css";
+import { supabase } from "./auth/SupabaseClient";
 
 const Navbar = ({ page, onNavigate }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [nickname, setNickname] = useState(null);
   const { user, signOut } = useAuth();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadNickname() {
+      if (!user?.id) {
+        setNickname(null);
+        return;
+      }
+
+      const prof = await supabase
+        .from("profiles")
+        .select("nickname")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (!cancelled) {
+        setNickname(prof.data?.nickname ?? null);
+      }
+    }
+
+    loadNickname();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -25,11 +52,7 @@ const Navbar = ({ page, onNavigate }) => {
     setIsOpen(false); // close mobile menu after click
   };
 
-  const username =
-    user?.user_metadata?.nickname ||
-    user?.user_metadata?.username ||
-    user?.email?.split("@")[0] ||
-    "Account";
+  const displayName = nickname || user?.email?.split("@")[0] || "Account";
 
   return (
     <nav className="navbar">
@@ -85,7 +108,7 @@ const Navbar = ({ page, onNavigate }) => {
           className="user-menu-button"
           onClick={toggleUserMenu}
         >
-          {username} ▾
+          {displayName} ▾
         </button>
 
         {isUserMenuOpen && (
