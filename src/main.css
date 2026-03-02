@@ -279,6 +279,14 @@ button:focus-visible {
   -webkit-overflow-scrolling: touch;
 }
 
+.difficulty-group {
+  margin: 1rem 0 1.25rem;
+}
+
+.difficulty-heading {
+  margin: 0.5rem 0;
+}
+
 .data-table tr{
   border-bottom: 1px solid #e0e0e0;
   padding: 1rem;
@@ -289,6 +297,91 @@ button:focus-visible {
   padding: 0.75rem;
   background-color: #f5f5f5;
 }
+
+.percent-bar-cell {
+  display: inline-flex;
+  align-items: center;
+  min-width: 210px;
+}
+
+.percent-track {
+  position: relative;
+  width: 180px;
+  height: 16px;
+  border-radius: 999px;
+  background: #20252b;
+  border: 1px solid #11161b;
+  overflow: hidden;
+}
+
+.percent-fill {
+  height: 100%;
+  border-radius: inherit;
+  transition: width 180ms ease-out;
+  width: 0%;
+}
+
+.percent-tone-red .percent-fill {
+  background: #d32f2f;
+}
+
+.percent-tone-orange .percent-fill {
+  background: #ef6c00;
+}
+
+.percent-tone-yellow .percent-fill {
+  background: #f9a825;
+}
+
+.percent-tone-green .percent-fill {
+  background: #2e7d32;
+}
+
+.percent-label {
+  font-weight: 600;
+  min-width: 52px;
+  text-align: center;
+}
+
+.percent-label-inside {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+  min-width: 0;
+  font-size: 0.85rem;
+}
+
+.overall-percent {
+  display: inline-flex;
+  vertical-align: middle;
+  margin: 0 0.25rem;
+}
+
+.percent-fill.w-0 { width: 0%; }
+.percent-fill.w-5 { width: 5%; }
+.percent-fill.w-10 { width: 10%; }
+.percent-fill.w-15 { width: 15%; }
+.percent-fill.w-20 { width: 20%; }
+.percent-fill.w-25 { width: 25%; }
+.percent-fill.w-30 { width: 30%; }
+.percent-fill.w-35 { width: 35%; }
+.percent-fill.w-40 { width: 40%; }
+.percent-fill.w-45 { width: 45%; }
+.percent-fill.w-50 { width: 50%; }
+.percent-fill.w-55 { width: 55%; }
+.percent-fill.w-60 { width: 60%; }
+.percent-fill.w-65 { width: 65%; }
+.percent-fill.w-70 { width: 70%; }
+.percent-fill.w-75 { width: 75%; }
+.percent-fill.w-80 { width: 80%; }
+.percent-fill.w-85 { width: 85%; }
+.percent-fill.w-90 { width: 90%; }
+.percent-fill.w-95 { width: 95%; }
+.percent-fill.w-100 { width: 100%; }
 
 .auth-panel {
   display: flex;
@@ -334,6 +427,19 @@ button:focus-visible {
     white-space: nowrap;
     padding: 0.5rem;
     font-size: 0.9rem;
+  }
+
+  .percent-bar-cell {
+    min-width: 170px;
+  }
+
+  .percent-track {
+    width: 140px;
+    height: 14px;
+  }
+
+  .percent-label {
+    font-size: 0.85rem;
   }
 }
 
