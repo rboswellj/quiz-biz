@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "./auth/SupabaseClient";
 import { useAuth } from "./auth/AuthProvider";
 import { CATEGORY_NAMES } from "./utility/Utils";
+import {
+  fetchMyWeightedStats,
+  fetchProfileNickname,
+  fetchRecentAttempts,
+} from "./utility/Scores";
 import PercentBar from "./PercentBar";
 
 // Optional: map OpenTDB category ids to names (add as you like)
@@ -24,38 +28,16 @@ export default function ScoresPage() {
       setErr("");
 
       try {
-        // 1) Load profile nickname for header display.
-        const prof = await supabase
-          .from("profiles")
-          .select("nickname")
-          .eq("id", user.id)
-          .maybeSingle();
-
-        if (prof.error) throw prof.error;
-
-        // 2) Load precomputed weighted stats view.
-        const st = await supabase
-        .from("my_weighted_stats")
-        .select("category,difficulty,weighted_percent,questions_answered,attempts,last_played")
-        .eq("user_id", user.id) // ✅ add this
-        .order("category", { ascending: true })
-        .order("difficulty", { ascending: true });
-
-        if (st.error) throw st.error;
-
-        // 3) Load most recent attempts for history table.
-        const at = await supabase
-          .from("quiz_attempts")
-          .select("id,category,difficulty,correct,total,created_at")
-          .order("created_at", { ascending: false })
-          .limit(25);
-
-        if (at.error) throw at.error;
+        const [loadedNickname, loadedStats, loadedAttempts] = await Promise.all([
+          fetchProfileNickname(user.id),
+          fetchMyWeightedStats(user.id),
+          fetchRecentAttempts(25),
+        ]);
 
         if (!cancelled) {
-          setNickname(prof.data?.nickname ?? null);
-          setStats(st.data ?? []);
-          setAttempts(at.data ?? []);
+          setNickname(loadedNickname);
+          setStats(loadedStats);
+          setAttempts(loadedAttempts);
         }
       } catch (e) {
         if (!cancelled) setErr(e?.message || "Failed to load scores.");

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "./auth/SupabaseClient";
-import { CATEGORY_NAMES } from "./utility/Utils";
+import { fetchLeaderboardSections } from "./utility/Scores";
 import PercentBar from "./PercentBar";
 
 export default function LeaderboardsPage() {
@@ -14,51 +13,19 @@ export default function LeaderboardsPage() {
     async function load() {
       setLoading(true);
       setErr("");
-
-      const difficulties = ["easy", "medium", "hard"];
-      const categoryIds = Object.keys(CATEGORY_NAMES).map(Number);
-
-      const jobs = categoryIds.flatMap((category) =>
-        difficulties.map((difficulty) =>
-          supabase
-            .rpc("get_leaderboard_weighted", {
-              p_category: category,
-              p_difficulty: difficulty,
-              p_limit: 50,
-            })
-            .then(({ data, error }) => ({ category, difficulty, data, error }))
-        )
-      );
-
-      const results = await Promise.all(jobs);
-
-      if (cancelled) return;
-
-      const firstError = results.find((r) => r.error);
-      if (firstError) {
-        setErr(firstError.error.message || "Failed to load leaderboards.");
-        setSections([]);
-        setLoading(false);
-        return;
+      try {
+        const loadedSections = await fetchLeaderboardSections();
+        if (!cancelled) {
+          setSections(loadedSections);
+          setLoading(false);
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setErr(e?.message || "Failed to load leaderboards.");
+          setSections([]);
+          setLoading(false);
+        }
       }
-
-      const nonEmpty = results
-        .map((r) => ({
-          category: r.category,
-          categoryName: CATEGORY_NAMES[r.category] ?? `Category ${r.category}`,
-          difficulty: r.difficulty,
-          rows: r.data ?? [],
-        }))
-        .filter((r) => r.rows.length > 0)
-        .sort((a, b) => {
-          if (a.category !== b.category) return a.category - b.category;
-          const order = { easy: 0, medium: 1, hard: 2 };
-          return (order[a.difficulty] ?? 99) - (order[b.difficulty] ?? 99);
-        });
-
-      setSections(nonEmpty);
-
-      setLoading(false);
     }
 
     load();
@@ -82,20 +49,12 @@ export default function LeaderboardsPage() {
               key={`${section.category}-${section.difficulty}`}
               className="difficulty-group"
             >
-<<<<<<< HEAD
-              <h4 className="difficulty-heading">
-=======
               <h4 className="difficulty-heading leaderboard-heading">
->>>>>>> 341db8c (Did some more styling and cleaned up a few of the components)
                 {section.categoryName} -{" "}
                 {section.difficulty.charAt(0).toUpperCase() + section.difficulty.slice(1)}
               </h4>
               <div className="table-wrap">
-<<<<<<< HEAD
-                <table className="data-table">
-=======
                 <table className="table table--sticky table--leaderboard">
->>>>>>> 341db8c (Did some more styling and cleaned up a few of the components)
                   <thead>
                     <tr>
                       <th>Rank</th>
