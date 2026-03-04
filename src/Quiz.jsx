@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+<<<<<<< HEAD
 import { useTrivia } from "./utility/fetchQuiz";
+=======
+import { useTrivia } from "./utility/FetchQuiz";
+>>>>>>> 341db8c (Did some more styling and cleaned up a few of the components)
 import QuestionCard from "./QuestionCard";
 import { useAuth } from "./auth/AuthProvider";
 import { saveAttempt } from "./utility/Scores";
@@ -16,7 +20,11 @@ export default function Quiz() {
   const [draftCategory, setDraftCategory] = useState(9);
 
   // Committed settings (only set when Start is clicked)
+<<<<<<< HEAD
   const [settings, setSettings] = useState(null); // { difficulty, category, amount } | null
+=======
+  const [settings, setSettings] = useState(null); // { difficulty, category, amount, requestKey } | null
+>>>>>>> 341db8c (Did some more styling and cleaned up a few of the components)
 
   // Quiz flow state
   const [index, setIndex] = useState(0);
@@ -41,9 +49,15 @@ export default function Quiz() {
   const current = useMemo(() => questions[index], [questions, index]);
 
   function startQuiz() {
+<<<<<<< HEAD
     // New run: clear "saved attempt" guard and trigger fresh fetch.
     savedAttemptRef.current = false;
     setRequestKey((k) => k + 1);
+=======
+    // clear "saved attempt"
+    savedAttemptRef.current = false;
+    setRequestKey((k) => k + 1); // update request key to trigger new fetch 
+>>>>>>> 341db8c (Did some more styling and cleaned up a few of the components)
 
     setSettings({
       difficulty: draftDifficulty,
@@ -117,8 +131,11 @@ export default function Quiz() {
         });
       } catch (e) {
         console.error("Failed to save attempt:", e);
+<<<<<<< HEAD
         // Optional retry behavior:
         // savedAttemptRef.current = false;
+=======
+>>>>>>> 341db8c (Did some more styling and cleaned up a few of the components)
       }
     })();
   }, [isFinished, user?.id, settings, score, questions.length]);

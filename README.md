@@ -1,12 +1,12 @@
 ## Quiz Biz
 github.com/rboswellj
 
-Quiz Biz is a React + Supabase trivia app where users can:
+Quiz Biz is a React + Supabase trivia app. Features include:
 - sign up/sign in
-- play category/difficulty quizzes
-- save attempts
+- play quizzes based on selectable categories/difficulties
+- Saved statistics at end of each round
 - view personal score breakdowns
-- view weighted leaderboards
+- view weighted leaderboards by category and difficulty
 
 ## Tech Stack
 - React 19 + Vite
@@ -19,7 +19,7 @@ Quiz Biz is a React + Supabase trivia app where users can:
 - A Supabase project
 
 ## CodeLou Requirements
-- Analyze data that is stored in arrays, objects, sets or maps and      display information about it in your app.
+- Analyze data that is stored in arrays, objects, sets or maps and display information about it in your app.
     - Maps used to sort through received data from api calls and display in score tables, as well as to build question card.
 - Validate user input and either prevent the invalid input or inform the user about it
     - Login verifies existing user account. Signup prevents repeating an in use nickname as well as verifying length and valid email. 
@@ -32,7 +32,12 @@ Quiz Biz is a React + Supabase trivia app where users can:
 - Persist important data to the user to local storage and make the stored data accessible in your app.
     Sign in is persistent, though the supabase package does most of the work on that front.
 
+## AI disclosure
+- I had AI create the script to create the dummy accounts and push their data to the DB. I figured that was harmless since it is just for populating fake users for testing in the dev environment and is not part of the published product.
+
 ## Project Setup
+Project has also been deployed to https://quiz-biz.rboswellj.workers.dev/ 
+
 1. Clone and install dependencies:
 
 ```bash
@@ -46,6 +51,7 @@ npm install
 ```bash
 VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY
 ```
 
 3. Start the frontend:
@@ -116,6 +122,31 @@ Expected:
 - `npm run build`: production build
 - `npm run preview`: preview production build
 - `npm run lint`: run ESLint
+- `npm run seed:dummy`: create/update 20 dummy users and seed dummy attempts/scores
+
+## Seed Dummy Data
+Use this when you want leaderboard/test data quickly.
+
+1. Ensure these env vars exist in `.env`:
+   - `VITE_SUPABASE_URL`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+2. Run from repo root:
+
+```bash
+npm run seed:dummy
+```
+
+What it does:
+- ensures 20 dummy auth users (`dummy_user_01@quizbiz.local` ... `dummy_user_20@quizbiz.local`)
+- upserts matching `profiles` rows
+- clears existing `quiz_attempts` and `scores` for those dummy users, then reseeds them
+- includes focused high-volume matchups so leaderboard buckets populate faster
+
+Test login for seeded dummy users:
+- password is `Password123!`
+
+Security note:
+- `SUPABASE_SERVICE_ROLE_KEY` is admin-level. Keep it server-side only and never expose it in frontend code.
 
 ## Troubleshooting
 - `Invalid API key` or `Failed to fetch`:
@@ -126,4 +157,3 @@ Expected:
 - Leaderboards empty:
   - leaderboard requires enough attempt data in each bucket
   - check `quiz_attempts` has rows for multiple users/categories/difficulties
-

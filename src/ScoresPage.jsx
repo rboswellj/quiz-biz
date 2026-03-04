@@ -167,7 +167,7 @@ export default function ScoresPage() {
               {group.difficulty.charAt(0).toUpperCase() + group.difficulty.slice(1)}
             </h4>
             <div className="table-wrap">
-              <table className="data-table">
+              <table className="table table--sticky table--stats">
                 <thead>
                   <tr>
                     <th>Category</th>
@@ -208,7 +208,7 @@ export default function ScoresPage() {
               {group.difficulty.charAt(0).toUpperCase() + group.difficulty.slice(1)}
             </h4>
             <div className="table-wrap">
-              <table className="data-table">
+              <table className="table table--sticky table--stats">
                 <thead>
                   <tr>
                     <th>When</th>

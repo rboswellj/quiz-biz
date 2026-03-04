@@ -82,12 +82,20 @@ export default function LeaderboardsPage() {
               key={`${section.category}-${section.difficulty}`}
               className="difficulty-group"
             >
+<<<<<<< HEAD
               <h4 className="difficulty-heading">
+=======
+              <h4 className="difficulty-heading leaderboard-heading">
+>>>>>>> 341db8c (Did some more styling and cleaned up a few of the components)
                 {section.categoryName} -{" "}
                 {section.difficulty.charAt(0).toUpperCase() + section.difficulty.slice(1)}
               </h4>
               <div className="table-wrap">
+<<<<<<< HEAD
                 <table className="data-table">
+=======
+                <table className="table table--sticky table--leaderboard">
+>>>>>>> 341db8c (Did some more styling and cleaned up a few of the components)
                   <thead>
                     <tr>
                       <th>Rank</th>

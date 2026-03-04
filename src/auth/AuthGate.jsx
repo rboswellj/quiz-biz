@@ -1,4 +1,4 @@
-import Auth from "../auth";
+import Auth from "../Auth";
 import { useAuth } from "./AuthProvider";
 
 export default function AuthGate({ children, loadingFallback = <p>Loading…</p> }) {
