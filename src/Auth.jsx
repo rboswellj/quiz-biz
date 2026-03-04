@@ -64,11 +64,7 @@ export default function Auth() {
           return;
         }
 
-<<<<<<< HEAD
-        setMsg("Account created! Check your email to confirm (if enabled).");
-=======
         setMsg("Account created!.");
->>>>>>> 341db8c (Did some more styling and cleaned up a few of the components)
         return;
       }
 
