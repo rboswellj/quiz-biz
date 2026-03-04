@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { AuthProvider, useAuth } from "./auth/AuthProvider";
-import Navbar from "./navbar";
+import Navbar from "./Navbar";
 
 import Quiz from "./Quiz";
 import ScoresPage from "./ScoresPage";
