@@ -12,7 +12,7 @@ function AppShell() {
   const { user, booting } = useAuth();
   const [page, setPage] = useState("quiz"); // quiz | scores | leaderboard | auth
 
-  // When auth state changes, keep page sane
+  // When auth state changes, keep page same
   useEffect(() => {
     if (booting) return;
 
@@ -21,7 +21,7 @@ function AppShell() {
     } else if (page === "auth") {
       setPage("quiz");     // logged in -> default to quiz
     }
-  }, [user, booting]); // intentionally not depending on `page`
+  }, [user, booting]);
 
   // Optional: block navigation to protected pages when logged out
   const safeNavigate = (nextPage) => {
